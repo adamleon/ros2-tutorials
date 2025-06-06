@@ -21,7 +21,7 @@ class PIDController : public rclcpp::Node
 public:
     explicit PIDController(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
     : Node("pid_controller", options),
-      kp_(1.0), ki_(0.5), kd_(0.0), anti_windup_limit_(10.0),
+      kp_(1.0), ki_(0.0), kd_(0.0), anti_windup_limit_(10.0),
       prev_error_(0.0), integral_(0.0), prev_time_sec_(0.0),
       setpoint_(0.0)
     {
@@ -77,13 +77,15 @@ private:
 
         if (!signal_received_) {
             std::cout << "First signal received, initializing previous error." << std::endl;
+            dt = 0.0;
+            prev_time_sec_ = now_sec; // Initialize previous time on first signal
             prev_error_ = error; // Initialize previous error on first signal
         }
 
         double proportional_gain = kp_ * error;
         integral_ += error * dt;
         double integral_gain = ki_ * std::clamp(integral_, -anti_windup_limit_, anti_windup_limit_); // Clamp integral to prevent windup
-        if(integral_ > anti_windup_limit_ || integral_ < -anti_windup_limit_) {
+        if((integral_ > anti_windup_limit_ || integral_ < -anti_windup_limit_) && ki_ != 0.0) {
             std::cout << "Integral term exceeded anti-windup limit: " << integral_ << std::endl;
         }
         double derivative_gain = kd_ * (error - prev_error_) / dt;

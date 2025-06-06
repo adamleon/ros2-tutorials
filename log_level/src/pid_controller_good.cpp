@@ -21,7 +21,7 @@ class PIDController : public rclcpp::Node
 public:
     explicit PIDController(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
     : Node("pid_controller", options),
-      kp_(1.0), ki_(0.5), kd_(0.0), anti_windup_limit_(10.0),
+      kp_(1.0), ki_(0.0), kd_(0.0), anti_windup_limit_(10.0),
       prev_error_(0.0), integral_(0.0), prev_time_sec_(0.0),
       setpoint_(0.0)
     {
@@ -72,12 +72,14 @@ private:
         double dt = now_sec - prev_time_sec_;
 
         if (dt <= 0.0) {
-            RCLCPP_ERROR_THROTTLE(this->get_logger(), clock, duration, "Received message with a timestamp earlier than the previous one, ignoring this update.");
+            RCLCPP_FATAL_THROTTLE(this->get_logger(), clock, duration, "Received message with a timestamp earlier than the previous one, ignoring this update.");
             return; // Ignore messages with timestamps earlier than the last processed message
         }
 
         if (!signal_received_) {
             RCLCPP_INFO(this->get_logger(), "First signal received, ignoring derivative.");
+            dt = 0.0;
+            prev_time_sec_ = now_sec; // Reset previous time to current time
             prev_error_ = error; // Initialize previous error on first signal
         }
 
@@ -85,7 +87,7 @@ private:
         integral_ += error * dt;
         double integral_gain = ki_ * std::clamp(integral_, -anti_windup_limit_, anti_windup_limit_); // Clamp integral to prevent windup
         RCLCPP_WARN_EXPRESSION(this->get_logger(), 
-            integral_ > anti_windup_limit_ || integral_ < -anti_windup_limit_,
+            (integral_ > anti_windup_limit_ || integral_ < -anti_windup_limit_) && ki_ != 0.0,
             "Integral term clamped to prevent windup: % .2f", integral_);
         double derivative_gain = kd_ * (error - prev_error_) / dt;
         double output = proportional_gain + integral_gain + derivative_gain;
@@ -123,7 +125,7 @@ private:
         
         // Check if the setpoint is valid (not NaN or Inf)
         if (std::isnan(msg->data) || std::isinf(msg->data)) {
-            RCLCPP_ERROR(this->get_logger(), "Received invalid setpoint value: %f", msg->data);
+            RCLCPP_FATAL(this->get_logger(), "Received invalid setpoint value: %f", msg->data);
             return; // Ignore invalid setpoints
         }
 
