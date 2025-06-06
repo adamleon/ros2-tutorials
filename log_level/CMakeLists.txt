@@ -103,6 +103,30 @@ install(TARGETS
   RUNTIME DESTINATION bin
 )
 
+# Make the log_level_introduction component
+add_library(log_level_introduction_component SHARED
+  src/log_level_introduction.cpp
+)
+add_dependencies(log_level_introduction_component ${PROJECT_NAME})
+ament_target_dependencies(log_level_introduction_component
+  rclcpp
+  std_msgs
+  rclcpp_components
+)
+rclcpp_components_register_node(
+  log_level_introduction_component 
+  PLUGIN "log_level::LogLevelNode"
+  EXECUTABLE log_level_introduction
+)
+ament_export_targets(export_log_level_introduction_component)
+install(TARGETS
+  log_level_introduction_component
+  EXPORT export_log_level_introduction_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+) 
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
