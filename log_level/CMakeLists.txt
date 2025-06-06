@@ -39,7 +39,7 @@ rclcpp_components_register_node(
   PLUGIN "log_level::SignalGenerator"
   EXECUTABLE signal_generator
 )
-ament_export_targets(signal_generator_component)
+ament_export_targets(export_signal_generator_component)
 install(TARGETS signal_generator_component
   EXPORT export_signal_generator_component
   ARCHIVE DESTINATION lib
@@ -61,12 +61,12 @@ ament_target_dependencies(pid_controller_good_component
   std_msgs
   rclcpp_components
 )
-rclcpp_components_register_nodes(
+rclcpp_components_register_node(
   pid_controller_good_component 
   PLUGIN "log_level::good::PIDController"
   EXECUTABLE pid_controller_good
 )
-ament_export_targets(pid_controller_good_component)
+ament_export_targets(export_pid_controller_good_component)
 install(TARGETS
   pid_controller_good_component
   EXPORT export_pid_controller_good_component
@@ -94,7 +94,7 @@ rclcpp_components_register_node(
   PLUGIN "log_level::bad::PIDController"
   EXECUTABLE pid_controller_bad
 )
-ament_export_targets(pid_controller_bad_component)
+ament_export_targets(export_pid_controller_bad_component)
 install(TARGETS
   pid_controller_bad_component
   EXPORT export_pid_controller_bad_component
