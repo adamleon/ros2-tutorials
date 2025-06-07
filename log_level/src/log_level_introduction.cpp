@@ -8,23 +8,28 @@ public:
     explicit LogLevelNode(const rclcpp::NodeOptions & options)
     : Node("log_level_introduction", options)
     {
-        RCLCPP_DEBUG(this->get_logger(), "DEBUG: Used for detailed debugging information.");
+        RCLCPP_DEBUG(this->get_logger(), "for details.");
         std::cin.get();
 
-        RCLCPP_INFO(this->get_logger(), "INFO: Used for general information about node operation.");
+        RCLCPP_INFO(this->get_logger(), "for general info.");
         std::cin.get();
 
-        RCLCPP_WARN(this->get_logger(), "WARN: Used when something unexpected happened, but the node can continue.");
+        RCLCPP_WARN(this->get_logger(), "for unexpected behavior.");
         std::cin.get();
 
-        RCLCPP_ERROR(this->get_logger(), "ERROR: Used when a significant problem occurred, but the node is still running.");
+        RCLCPP_ERROR(this->get_logger(), "for when problems occur.");
         std::cin.get();
 
-        RCLCPP_FATAL(this->get_logger(), "FATAL: Used when a critical error occurred and the node may not be able to continue.");
+        RCLCPP_FATAL(this->get_logger(), "for when the node fails.");
         std::cin.get();
     }
 };
 }
 
-#include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(log_level::LogLevelNode)
+int main(int argc, char * argv[])
+{
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<log_level::LogLevelNode>(rclcpp::NodeOptions()));
+    rclcpp::shutdown();
+    return 0;
+}

@@ -104,28 +104,19 @@ install(TARGETS
 )
 
 # Make the log_level_introduction component
-add_library(log_level_introduction_component SHARED
+add_executable(log_level_introduction
   src/log_level_introduction.cpp
 )
-add_dependencies(log_level_introduction_component ${PROJECT_NAME})
-ament_target_dependencies(log_level_introduction_component
+add_dependencies(log_level_introduction ${PROJECT_NAME})
+target_link_libraries(log_level_introduction "${cpp_typesupport_target}")
+ament_target_dependencies(log_level_introduction
   rclcpp
   std_msgs
-  rclcpp_components
 )
-rclcpp_components_register_node(
-  log_level_introduction_component 
-  PLUGIN "log_level::LogLevelNode"
-  EXECUTABLE log_level_introduction
-)
-ament_export_targets(export_log_level_introduction_component)
 install(TARGETS
-  log_level_introduction_component
-  EXPORT export_log_level_introduction_component
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-) 
+  log_level_introduction
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
