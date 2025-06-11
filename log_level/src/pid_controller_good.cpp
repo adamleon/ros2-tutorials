@@ -36,13 +36,13 @@ public:
         sub_setpoint_ = this->create_subscription<log_level::msg::Float64Stamped>(
             "setpoint", 10,
             std::bind(&PIDController::setpoint_callback, this, std::placeholders::_1));
-        RCLCPP_DEBUG(this->get_logger(), "Subscribed to 'setpoint' topic and created 'output' publisher");
+        RCLCPP_DEBUG(this->get_logger(), "Subscribed to 'setpoint' topic");
         
         pub_ = this->create_publisher<log_level::msg::Float64Stamped>("output", 10);
         RCLCPP_DEBUG(this->get_logger(), "Publisher for 'output' topic created");
 
         // Log the initialization
-        RCLCPP_INFO(this->get_logger(), "PID Controller Node Initialized with parameters:");
+        RCLCPP_INFO(this->get_logger(), "PID Controller initialized,\n\twith parameters:");
         RCLCPP_INFO(this->get_logger(), "Kp=%.2f, Ki=%.2f, Kd=%.2f", kp_, ki_, kd_);
     }
 
@@ -77,7 +77,7 @@ private:
         }
 
         if (!signal_received_) {
-            RCLCPP_INFO(this->get_logger(), "First signal received, ignoring derivative.");
+            RCLCPP_INFO(this->get_logger(), "First signal received, ignoring\nderivative.");
             dt = 0.0;
             prev_time_sec_ = now_sec; // Reset previous time to current time
             prev_error_ = error; // Initialize previous error on first signal
@@ -93,7 +93,7 @@ private:
         double output = proportional_gain + integral_gain + derivative_gain;
 
         RCLCPP_DEBUG_THROTTLE(this->get_logger(), clock, duration, 
-            "PID computation: P=% .2f, I=% .2f, D=% .2f, Output=% .2f",
+            "PID computation:\nP=% .2f, I=% .2f, D=% .2f, Output=% .2f",
             proportional_gain, integral_gain, derivative_gain, output
         );
 
