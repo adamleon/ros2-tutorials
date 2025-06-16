@@ -1,0 +1,4 @@
+some_node:
+  ros__parameters:
+    welcome_message: "hello world"
+    answer_to_life: 42
